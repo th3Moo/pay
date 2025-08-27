@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydra Platform - Complete Suite</title>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-background text-foreground font-sans antialiased">
+
+    <div id="app" class="h-screen w-screen">
+        <section id="login-section" class="flex items-center justify-center h-full">
+            <div class="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border border-border">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold text-primary-foreground">Hydra Platform</h1>
+                    <p class="text-muted-foreground">Complete Financial & Gaming Suite</p>
+                </div>
+                <form id="login-form" class="space-y-6">
+                    <div>
+                        <label for="email" class="text-sm font-medium text-muted-foreground">Email</label>
+                        <input id="email" name="email" type="email" required class="input-base" value="admin@hydra.io">
+                    </div>
+                    <div>
+                        <label for="password" class="text-sm font-medium text-muted-foreground">Password</label>
+                        <input id="password" name="password" type="password" required class="input-base" value="password123">
+                    </div>
+                    <div id="login-error" class="text-red-500 text-sm hidden"></div>
+                    <button type="submit" class="btn-primary w-full">Sign In</button>
+                </form>
+            </div>
+        </section>
+
+        <main id="dashboard-section" class="hidden h-full w-full">
+            <div class="flex h-full">
+                <nav id="sidebar" class="w-64 bg-card border-r border-border flex flex-col">
+                    <div class="p-4 border-b border-border">
+                        <h2 class="text-xl font-bold text-primary-foreground">Hydra Suite</h2>
+                        <span class="text-xs text-muted-foreground">Financial & Gaming Platform</span>
+                    </div>
+                    <div class="flex-grow p-4 space-y-2">
+                        <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Financial</div>
+                        <a class="nav-link active" data-view="dashboard-view"><i data-lucide="layout-dashboard" class="w-4 h-4 mr-2"></i>Dashboard</a>
+                        <a class="nav-link" data-view="deposit-view"><i data-lucide="arrow-down-circle" class="w-4 h-4 mr-2"></i>Deposit</a>
+                        <a class="nav-link" data-view="withdraw-view"><i data-lucide="arrow-up-circle" class="w-4 h-4 mr-2"></i>Withdraw</a>
+                        <a class="nav-link" data-view="exchange-view"><i data-lucide="repeat" class="w-4 h-4 mr-2"></i>Exchange</a>
+                        
+                        <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Gaming</div>
+                        <a class="nav-link" data-view="gaming-dashboard-view"><i data-lucide="gamepad-2" class="w-4 h-4 mr-2"></i>Gaming Hub</a>
+                        <a class="nav-link" data-view="coin-flip-view"><i data-lucide="coins" class="w-4 h-4 mr-2"></i>Coin Flip</a>
+                        <a class="nav-link" data-view="wallet-games-view"><i data-lucide="wallet" class="w-4 h-4 mr-2"></i>Wallet Games</a>
+                        
+                        <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Development</div>
+                        <a class="nav-link" data-view="code-explorer-view"><i data-lucide="code" class="w-4 h-4 mr-2"></i>Code Explorer</a>
+                        <a class="nav-link" data-view="project-viewer-view"><i data-lucide="folder" class="w-4 h-4 mr-2"></i>Project Viewer</a>
+                        
+                        <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Administration</div>
+                        <a id="admin-nav-link" class="nav-link" data-view="admin-view"><i data-lucide="shield" class="w-4 h-4 mr-2"></i>Admin Panel</a>
+                    </div>
+                    <div class="p-4 border-t border-border">
+                         <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-primary-foreground font-bold" id="user-initials"></div>
+                            <div>
+                                <p class="text-sm font-semibold text-primary-foreground" id="user-email-display"></p>
+                                <a href="#" id="logout-button" class="text-xs text-muted-foreground hover:text-primary-foreground transition-colors">Sign out</a>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="flex-1 flex flex-col overflow-hidden">
+                    <header class="h-16 flex items-center justify-between p-4 border-b border-border bg-card/50 backdrop-blur-sm shrink-0">
+                        <h1 id="view-title" class="text-xl font-semibold text-primary-foreground">Dashboard</h1>
+                        <div class="flex items-center space-x-4">
+                           <div class="text-right">
+                               <p class="text-sm text-muted-foreground">Total Balance (USD)</p>
+                               <p id="total-balance-usd" class="text-lg font-bold text-primary-foreground">$0.00</p>
+                           </div>
+                           <button id="main-deposit-btn" class="btn-primary-small">
+                               <i data-lucide="plus" class="w-4 h-4 mr-1"></i> New Deposit
+                           </button>
+                        </div>
+                    </header>
+                    
+                    <div id="view-container" class="flex-1 p-6 overflow-y-auto">
+                        
+                        <div id="dashboard-view" class="view-content">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="lg:col-span-1 space-y-6">
+                                    <div class="card">
+                                        <h3 class="card-header">Wallet Balances</h3>
+                                        <div id="wallet-balances-container" class="space-y-4 p-4"></div>
+                                    </div>
+                                    <div class="card">
+                                        <h3 class="card-header">System Status</h3>
+                                        <div class="p-4">
+                                            <div class="flex items-center space-x-2 text-green-400">
+                                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                                <span class="text-sm">All Systems Operational</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-2 card">
+                                    <h3 class="card-header">Recent Activity</h3>
+                                    <div class="p-4">
+                                        <canvas id="activity-chart" height="150"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-6">
+                                <h3 class="card-header">Recent Transactions</h3>
+                                <div id="transactions-container" class="overflow-x-auto">
+                                    <table class="w-full text-sm text-left">
+                                        <thead class="text-xs text-muted-foreground uppercase">
+                                            <tr>
+                                                <th class="p-4">Date</th>
+                                                <th class="p-4">Type</th>
+                                                <th class="p-4">Details</th>
+                                                <th class="p-4 text-right">Amount</th>
+                                                <th class="p-4 text-center">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transactions-table-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="deposit-view" class="view-content hidden max-w-2xl mx-auto">
+                            <div class="card">
+                                <h3 class="card-header">Make a Deposit</h3>
+                                <div class="p-6">
+                                    <div class="flex border-b border-border">
+                                        <button id="deposit-fiat-tab" class="tab-button active">Fiat (Cash App)</button>
+                                        <button id="deposit-crypto-tab" class="tab-button">Crypto (USDT)</button>
+                                    </div>
+                                    
+                                    <div id="deposit-fiat-content">
+                                        <p class="mt-4 text-sm text-muted-foreground">Deposit USD directly using Cash App.</p>
+                                        <form id="fiat-deposit-form" class="mt-4 space-y-4">
+                                            <label class="block">
+                                                <span class="text-sm text-muted-foreground">Amount (USD)</span>
+                                                <input type="number" id="fiat-amount" class="input-base" placeholder="e.g., 100" min="10" step="1" required>
+                                            </label>
+                                            <button type="submit" class="btn-primary w-full">Initiate Deposit</button>
+                                        </form>
+                                    </div>
+
+                                    <div id="deposit-crypto-content" class="hidden">
+                                        <p class="mt-4 text-sm text-muted-foreground">Send USDT (TRC-20) to your dedicated address.</p>
+                                        <div id="crypto-address-container" class="mt-4 hidden">
+                                            <p class="text-sm text-muted-foreground">Your USDT TRC-20 Address:</p>
+                                            <div class="flex items-center gap-2 mt-2 p-3 bg-background rounded-md border border-border">
+                                                <code id="crypto-address" class="flex-grow text-primary-foreground break-all"></code>
+                                                <button id="copy-address-btn" class="p-1 text-muted-foreground hover:text-primary-foreground">
+                                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                                </button>
+                                            </div>
+                                            <p class="text-xs text-yellow-400 mt-2">Only send USDT on the TRC-20 (TRON) network. Sending other assets will result in loss of funds.</p>
+                                            <button id="crypto-deposit-done" class="btn-secondary w-full mt-4">I have sent the funds</button>
+                                        </div>
+                                        <button id="generate-address-btn" class="btn-primary w-full mt-4">Generate Deposit Address</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="withdraw-view" class="view-content hidden max-w-2xl mx-auto">
+                           <div class="card">
+                                <h3 class="card-header">Withdraw Funds</h3>
+                                <form id="withdraw-form" class="p-6 space-y-4">
+                                    <p class="text-sm text-muted-foreground">Withdraw funds to your TRC20 wallet or Cash App account. This is a simulation.</p>
+                                    <label class="block">
+                                        <span class="text-sm text-muted-foreground">From Wallet</span>
+                                        <select id="withdraw-currency" class="input-base">
+                                            <option value="USDT">USDT</option>
+                                            <option value="USD">USD</option>
+                                        </select>
+                                    </label>
+                                     <label class="block">
+                                        <span class="text-sm text-muted-foreground">Amount</span>
+                                        <input type="number" id="withdraw-amount" class="input-base" placeholder="e.g., 50" min="10" step="1" required>
+                                    </label>
+                                    <label class="block">
+                                        <span class="text-sm text-muted-foreground">Destination Method</span>
+                                        <select id="withdraw-method" class="input-base">
+                                            <option value="trc20">TRC20 Wallet</option>
+                                            <option value="cashapp">Cash App</option>
+                                        </select>
+                                    </label>
+                                     <label class="block">
+                                        <span id="withdraw-destination-label" class="text-sm text-muted-foreground">TRC20 Address</span>
+                                        <input type="text" id="withdraw-destination" class="input-base" placeholder="Enter your TRC20 wallet address" required>
+                                    </label>
+                                    <button type="submit" class="btn-primary w-full">Initiate Withdrawal</button>
+                                </form>
+                           </div>
+                        </div>
+
+                        <div id="exchange-view" class="view-content hidden max-w-2xl mx-auto">
+                             <div class="card">
+                                <h3 class="card-header">Currency Exchange</h3>
+                                <div class="p-6 space-y-6">
+                                    <div class="grid grid-cols-5 gap-4 items-end">
+                                        <div class="col-span-2">
+                                            <label for="from-currency" class="text-sm text-muted-foreground">From</label>
+                                            <input type="number" id="from-amount" class="input-base text-lg" placeholder="0.00">
+                                        </div>
+                                        <div class="col-span-2">
+                                            <select id="from-currency" class="input-base text-lg">
+                                                <option value="USD">USD</option>
+                                                <option value="USDT">USDT</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-span-1 text-right text-sm text-muted-foreground" id="from-balance">Balance: $0.00</div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-center">
+                                        <div class="border-t border-border flex-grow"></div>
+                                        <button id="swap-currencies-btn" class="p-2 mx-4 rounded-full border border-border hover:bg-card-hover">
+                                            <i data-lucide="repeat" class="w-5 h-5 text-muted-foreground"></i>
+                                        </button>
+                                        <div class="border-t border-border flex-grow"></div>
+                                    </div>
+
+                                    <div class="grid grid-cols-5 gap-4 items-end">
+                                        <div class="col-span-2">
+                                            <label for="to-currency" class="text-sm text-muted-foreground">To</label>
+                                            <input type="number" id="to-amount" class="input-base text-lg" placeholder="0.00" readonly>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <select id="to-currency" class="input-base text-lg">
+                                                <option value="USDT">USDT</option>
+                                                <option value="USD">USD</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-span-1 text-right text-sm text-muted-foreground" id="to-balance">Balance: 0.00</div>
+                                    </div>
+                                    
+                                    <div id="quote-container" class="text-sm text-center text-muted-foreground p-3 bg-background rounded-md hidden"></div>
+                                    <button id="execute-exchange-btn" class="btn-primary w-full" disabled>Exchange</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="gaming-dashboard-view" class="view-content hidden">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <div class="lg:col-span-2 space-y-6">
+                                    <div class="card">
+                                        <h3 class="card-header">Available Games</h3>
+                                        <div class="p-6 grid grid-cols-2 gap-4">
+                                            <div class="game-card p-4 border border-border rounded-lg hover:bg-card-hover cursor-pointer" data-game="coin-flip">
+                                                <div class="flex items-center space-x-3">
+                                                    <i data-lucide="coins" class="w-8 h-8 text-yellow-400"></i>
+                                                    <div>
+                                                        <h4 class="font-semibold">Coin Flip</h4>
+                                                        <p class="text-sm text-muted-foreground">50/50 chance game</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="game-card p-4 border border-border rounded-lg hover:bg-card-hover cursor-pointer" data-game="dice-roll">
+                                                <div class="flex items-center space-x-3">
+                                                    <i data-lucide="dice-6" class="w-8 h-8 text-green-400"></i>
+                                                    <div>
+                                                        <h4 class="font-semibold">Dice Roll</h4>
+                                                        <p class="text-sm text-muted-foreground">Roll and win</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-1">
+                                    <div class="card">
+                                        <h3 class="card-header">Gaming Stats</h3>
+                                        <div class="p-4 space-y-4">
+                                            <div class="flex justify-between">
+                                                <span class="text-muted-foreground">Games Played</span>
+                                                <span class="font-semibold" id="games-played">0</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-muted-foreground">Total Wagered</span>
+                                                <span class="font-semibold" id="total-wagered">$0.00</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-muted-foreground">Net P&L</span>
+                                                <span class="font-semibold" id="net-pnl">$0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="coin-flip-view" class="view-content hidden max-w-2xl mx-auto">
+                            <div class="card">
+                                <h3 class="card-header">Coin Flip Game</h3>
+                                <div class="p-6 space-y-6">
+                                    <div class="text-center">
+                                        <div id="coin" class="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-6xl font-bold text-white shadow-lg">
+                                            ?
+                                        </div>
+                                        <p class="text-muted-foreground">Choose heads or tails and place your bet!</p>
+                                    </div>
+                                    
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="text-sm text-muted-foreground">Bet Amount (USDT)</label>
+                                            <input type="number" id="coin-bet-amount" class="input-base" placeholder="e.g., 10" min="1" step="1">
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <button id="bet-heads" class="btn-secondary">
+                                                <i data-lucide="circle" class="w-4 h-4 mr-2"></i>Heads
+                                            </button>
+                                            <button id="bet-tails" class="btn-secondary">
+                                                <i data-lucide="circle-dot" class="w-4 h-4 mr-2"></i>Tails
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="game-result" class="text-center p-4 rounded-lg hidden">
+                                        <p id="result-text" class="font-semibold"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="code-explorer-view" class="view-content hidden">
+                            <div class="flex h-full -m-6">
+                                <aside class="w-1/4 max-w-xs h-full bg-gray-900/80 backdrop-blur-sm border-r border-gray-700/50 flex flex-col shrink-0">
+                                    <div class="px-4 py-3 border-b border-gray-700/50 flex items-center space-x-2">
+                                        <i data-lucide="folder" class="w-6 h-6 text-cyan-400"></i>
+                                        <h3 class="text-lg font-bold text-gray-100">Project Files</h3>
+                                    </div>
+                                    <div id="file-tree-container" class="flex-grow p-4 overflow-y-auto">
+                                        </div>
+                                </aside>
+                                <main class="flex-grow flex flex-col h-full bg-gray-800/70">
+                                    <div class="flex-shrink-0 px-6 py-3 border-b border-gray-700/50 flex items-center justify-between bg-gray-900/50">
+                                        <div id="file-path" class="text-sm text-gray-400 font-mono">
+                                            Select a file to view its contents
+                                        </div>
+                                        <div class="flex items-center space-x-3">
+                                            <span class="text-xs text-gray-500">Hydra Platform Code</span>
+                                            <button id="copy-code-btn" class="text-gray-400 hover:text-white cursor-pointer" title="Copy code">
+                                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow relative">
+                                        <pre id="code-container" class="h-full w-full overflow-auto p-6 text-sm bg-gray-900"><code class="language-js"></code></pre>
+                                        <div id="copy-feedback" class="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-md shadow-lg opacity-0 transition-opacity duration-300">
+                                            Copied to clipboard!
+                                        </div>
+                                    </div>
+                                </main>
+                            </div>
+                        </div>
+                        
+                        <div id="admin-view" class="view-content hidden">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                               <div class="card">
+                                   <h3 class="card-header">System Hot Wallet</h3>
+                                   <div id="admin-wallet-balances" class="p-4 space-y-3"></div>
+                               </div>
+                               <div class="card">
+                                   <h3 class="card-header">Administrative Withdrawal</h3>
+                                   <form id="admin-withdraw-form" class="p-4 space-y-4">
+                                       <p class="text-sm text-muted-foreground">Securely move funds from the system's hot wallet to cold storage. Requires confirmation.</p>
+                                       <label class="block">
+                                            <span class="text-sm text-muted-foreground">Currency</span>
+                                            <select id="admin-withdraw-currency" class="input-base">
+                                                <option value="USDT">USDT (TRC-20)</option>
+                                                <option value="USD">USD</option>
+                                            </select>
+                                        </label>
+                                        <label class="block">
+                                            <span class="text-sm text-muted-foreground">Amount</span>
+                                            <input type="number" id="admin-withdraw-amount" class="input-base" placeholder="e.g., 50000" required>
+                                        </label>
+                                        <label class="block">
+                                            <span class="text-sm text-muted-foreground">Cold Storage Address</span>
+                                            <input type="text" id="admin-withdraw-address" class="input-base" placeholder="Enter destination address" required>
+                                        </label>
+                                        <button type="submit" class="btn-danger w-full">Initiate Secure Withdrawal</button>
+                                   </form>
+                               </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="fixed top-5 right-5 bg-card border border-border rounded-lg shadow-lg p-4 text-sm flex items-center gap-3 opacity-0 translate-y-[-20px] transition-all duration-300 z-50">
+        <div id="toast-icon"></div>
+        <span id="toast-message"></span>
+    </div>
+
+    <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-40">
+        <div id="modal-content" class="card p-6 rounded-lg shadow-2xl max-w-sm w-full">
+        </div>
+    </div>
+    
+    <script type="module" src="main.js" defer></script>
+</body>
+</html>
