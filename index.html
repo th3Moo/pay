@@ -15,6 +15,7 @@
 <body class="bg-background text-foreground font-sans antialiased">
 
     <div id="app" class="h-screen w-screen">
+        <!-- Login Section -->
         <section id="login-section" class="flex items-center justify-center h-full">
             <div class="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border border-border">
                 <div class="text-center">
@@ -36,29 +37,35 @@
             </div>
         </section>
 
+        <!-- Main Dashboard -->
         <main id="dashboard-section" class="hidden h-full w-full">
             <div class="flex h-full">
+                <!-- Sidebar Navigation -->
                 <nav id="sidebar" class="w-64 bg-card border-r border-border flex flex-col">
                     <div class="p-4 border-b border-border">
                         <h2 class="text-xl font-bold text-primary-foreground">Hydra Suite</h2>
                         <span class="text-xs text-muted-foreground">Financial & Gaming Platform</span>
                     </div>
                     <div class="flex-grow p-4 space-y-2">
+                        <!-- Financial Section -->
                         <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Financial</div>
                         <a class="nav-link active" data-view="dashboard-view"><i data-lucide="layout-dashboard" class="w-4 h-4 mr-2"></i>Dashboard</a>
                         <a class="nav-link" data-view="deposit-view"><i data-lucide="arrow-down-circle" class="w-4 h-4 mr-2"></i>Deposit</a>
                         <a class="nav-link" data-view="withdraw-view"><i data-lucide="arrow-up-circle" class="w-4 h-4 mr-2"></i>Withdraw</a>
                         <a class="nav-link" data-view="exchange-view"><i data-lucide="repeat" class="w-4 h-4 mr-2"></i>Exchange</a>
                         
+                        <!-- Gaming Section -->
                         <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Gaming</div>
                         <a class="nav-link" data-view="gaming-dashboard-view"><i data-lucide="gamepad-2" class="w-4 h-4 mr-2"></i>Gaming Hub</a>
                         <a class="nav-link" data-view="coin-flip-view"><i data-lucide="coins" class="w-4 h-4 mr-2"></i>Coin Flip</a>
                         <a class="nav-link" data-view="wallet-games-view"><i data-lucide="wallet" class="w-4 h-4 mr-2"></i>Wallet Games</a>
                         
+                        <!-- Development Section -->
                         <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Development</div>
                         <a class="nav-link" data-view="code-explorer-view"><i data-lucide="code" class="w-4 h-4 mr-2"></i>Code Explorer</a>
                         <a class="nav-link" data-view="project-viewer-view"><i data-lucide="folder" class="w-4 h-4 mr-2"></i>Project Viewer</a>
                         
+                        <!-- Admin Section -->
                         <div class="text-xs text-muted-foreground uppercase font-medium mb-2 mt-4">Administration</div>
                         <a id="admin-nav-link" class="nav-link" data-view="admin-view"><i data-lucide="shield" class="w-4 h-4 mr-2"></i>Admin Panel</a>
                     </div>
@@ -73,6 +80,7 @@
                     </div>
                 </nav>
 
+                <!-- Main Content Area -->
                 <div class="flex-1 flex flex-col overflow-hidden">
                     <header class="h-16 flex items-center justify-between p-4 border-b border-border bg-card/50 backdrop-blur-sm shrink-0">
                         <h1 id="view-title" class="text-xl font-semibold text-primary-foreground">Dashboard</h1>
@@ -87,8 +95,10 @@
                         </div>
                     </header>
                     
+                    <!-- View Container -->
                     <div id="view-container" class="flex-1 p-6 overflow-y-auto">
                         
+                        <!-- Financial Dashboard View -->
                         <div id="dashboard-view" class="view-content">
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <div class="lg:col-span-1 space-y-6">
@@ -133,6 +143,7 @@
                             </div>
                         </div>
 
+                        <!-- Deposit View -->
                         <div id="deposit-view" class="view-content hidden max-w-2xl mx-auto">
                             <div class="card">
                                 <h3 class="card-header">Make a Deposit</h3>
@@ -172,38 +183,32 @@
                             </div>
                         </div>
 
+                        <!-- Withdraw View -->
                         <div id="withdraw-view" class="view-content hidden max-w-2xl mx-auto">
                            <div class="card">
                                 <h3 class="card-header">Withdraw Funds</h3>
                                 <form id="withdraw-form" class="p-6 space-y-4">
-                                    <p class="text-sm text-muted-foreground">Withdraw funds to your TRC20 wallet or Cash App account. This is a simulation.</p>
+                                    <p class="text-sm text-muted-foreground">Convert USDT to USD and withdraw to your linked bank account. This is a simulation.</p>
                                     <label class="block">
                                         <span class="text-sm text-muted-foreground">From Wallet</span>
                                         <select id="withdraw-currency" class="input-base">
-                                            <option value="USDT">USDT</option>
-                                            <option value="USD">USD</option>
+                                            <option value="USDT">USDT (TRC-20)</option>
                                         </select>
                                     </label>
                                      <label class="block">
-                                        <span class="text-sm text-muted-foreground">Amount</span>
+                                        <span class="text-sm text-muted-foreground">Amount (USDT)</span>
                                         <input type="number" id="withdraw-amount" class="input-base" placeholder="e.g., 50" min="10" step="1" required>
                                     </label>
-                                    <label class="block">
-                                        <span class="text-sm text-muted-foreground">Destination Method</span>
-                                        <select id="withdraw-method" class="input-base">
-                                            <option value="trc20">TRC20 Wallet</option>
-                                            <option value="cashapp">Cash App</option>
-                                        </select>
-                                    </label>
                                      <label class="block">
-                                        <span id="withdraw-destination-label" class="text-sm text-muted-foreground">TRC20 Address</span>
-                                        <input type="text" id="withdraw-destination" class="input-base" placeholder="Enter your TRC20 wallet address" required>
+                                        <span class="text-sm text-muted-foreground">Destination Bank Account</span>
+                                        <input type="text" class="input-base" value="Bank of America - **** 1234" readonly>
                                     </label>
                                     <button type="submit" class="btn-primary w-full">Initiate Withdrawal</button>
                                 </form>
                            </div>
                         </div>
 
+                        <!-- Exchange View -->
                         <div id="exchange-view" class="view-content hidden max-w-2xl mx-auto">
                              <div class="card">
                                 <h3 class="card-header">Currency Exchange</h3>
@@ -250,6 +255,7 @@
                             </div>
                         </div>
 
+                        <!-- Gaming Dashboard View -->
                         <div id="gaming-dashboard-view" class="view-content hidden">
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <div class="lg:col-span-2 space-y-6">
@@ -299,6 +305,7 @@
                             </div>
                         </div>
 
+                        <!-- Coin Flip Game View -->
                         <div id="coin-flip-view" class="view-content hidden max-w-2xl mx-auto">
                             <div class="card">
                                 <h3 class="card-header">Coin Flip Game</h3>
@@ -333,6 +340,7 @@
                             </div>
                         </div>
 
+                        <!-- Code Explorer View -->
                         <div id="code-explorer-view" class="view-content hidden">
                             <div class="flex h-full -m-6">
                                 <aside class="w-1/4 max-w-xs h-full bg-gray-900/80 backdrop-blur-sm border-r border-gray-700/50 flex flex-col shrink-0">
@@ -341,7 +349,8 @@
                                         <h3 class="text-lg font-bold text-gray-100">Project Files</h3>
                                     </div>
                                     <div id="file-tree-container" class="flex-grow p-4 overflow-y-auto">
-                                        </div>
+                                        <!-- File tree will be rendered here -->
+                                    </div>
                                 </aside>
                                 <main class="flex-grow flex flex-col h-full bg-gray-800/70">
                                     <div class="flex-shrink-0 px-6 py-3 border-b border-gray-700/50 flex items-center justify-between bg-gray-900/50">
@@ -365,6 +374,7 @@
                             </div>
                         </div>
                         
+                        <!-- Admin View -->
                         <div id="admin-view" class="view-content hidden">
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                <div class="card">
@@ -402,11 +412,13 @@
         </main>
     </div>
 
+    <!-- Toast Notifications -->
     <div id="toast" class="fixed top-5 right-5 bg-card border border-border rounded-lg shadow-lg p-4 text-sm flex items-center gap-3 opacity-0 translate-y-[-20px] transition-all duration-300 z-50">
         <div id="toast-icon"></div>
         <span id="toast-message"></span>
     </div>
 
+    <!-- Modal -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center hidden z-40">
         <div id="modal-content" class="card p-6 rounded-lg shadow-2xl max-w-sm w-full">
         </div>

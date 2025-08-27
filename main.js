@@ -74,18 +74,14 @@ const App = {
             });
         });
         
-        // Deposit & Withdraw forms
+        // Deposit forms
         const fiatDepositForm = document.getElementById('fiat-deposit-form');
         const withdrawForm = document.getElementById('withdraw-form');
         const adminWithdrawForm = document.getElementById('admin-withdraw-form');
-        const withdrawMethodSelect = document.getElementById('withdraw-method');
-        const withdrawCurrencySelect = document.getElementById('withdraw-currency');
         
         if (fiatDepositForm) fiatDepositForm.addEventListener('submit', this.handleFiatDeposit.bind(this));
         if (withdrawForm) withdrawForm.addEventListener('submit', this.handleWithdraw.bind(this));
         if (adminWithdrawForm) adminWithdrawForm.addEventListener('submit', this.handleAdminWithdraw.bind(this));
-        if (withdrawMethodSelect) withdrawMethodSelect.addEventListener('change', this.updateWithdrawDestinationUI.bind(this));
-        if (withdrawCurrencySelect) withdrawCurrencySelect.addEventListener('change', this.updateWithdrawDestinationUI.bind(this));
         
         // Deposit tabs
         const depositFiatTab = document.getElementById('deposit-fiat-tab');
@@ -194,82 +190,6 @@ const App = {
         this.selectors.dashboardSection.classList.add('hidden');
         this.showToast('Logged out successfully', 'success');
     },
-
-    // Handle withdrawal
-    async handleWithdraw(e) {
-        e.preventDefault();
-        const form = e.target;
-        const button = form.querySelector('button[type="submit"]');
-
-        const currency = document.getElementById('withdraw-currency').value;
-        const amount = parseFloat(document.getElementById('withdraw-amount').value);
-        const method = document.getElementById('withdraw-method').value;
-        const destination = document.getElementById('withdraw-destination').value;
-
-        if (!amount || amount <= 0 || !destination) {
-            this.showToast('Please fill in all fields correctly.', 'error');
-            return;
-        }
-
-        // Check balance
-        const wallet = this.state.wallets.find(w => w.currency === currency);
-        if (!wallet || wallet.balance < amount) {
-            this.showToast(`Insufficient ${currency} balance.`, 'error');
-            return;
-        }
-
-        try {
-            this.toggleButtonLoading(button, true);
-            const result = await apiClient.initiateWithdrawal(this.state.user.id, amount, currency, method, destination);
-            
-            this.showToast('Withdrawal initiated successfully!', 'success');
-            
-            // Refresh dashboard data to show the new transaction
-            await this.loadDashboardData();
-            // Switch back to dashboard view
-            this.showView('dashboard-view');
-            
-            // Reset form
-            form.reset();
-            this.updateWithdrawDestinationUI();
-
-        } catch (error) {
-            console.error('Withdrawal failed:', error);
-            this.showToast(error.message || 'Withdrawal failed.', 'error');
-        } finally {
-            this.toggleButtonLoading(button, false);
-        }
-    },
-    
-    // Update withdrawal UI based on selection
-    updateWithdrawDestinationUI() {
-        const currencySelect = document.getElementById('withdraw-currency');
-        const methodSelect = document.getElementById('withdraw-method');
-        const destinationLabel = document.getElementById('withdraw-destination-label');
-        const destinationInput = document.getElementById('withdraw-destination');
-
-        if (!currencySelect || !methodSelect || !destinationLabel || !destinationInput) return;
-
-        const selectedCurrency = currencySelect.value;
-
-        // If currency is USD, only Cash App is allowed
-        if (selectedCurrency === 'USD') {
-            methodSelect.value = 'cashapp';
-            methodSelect.querySelector('option[value="trc20"]').disabled = true;
-        } else { // For USDT, TRC20 is allowed again
-            methodSelect.querySelector('option[value="trc20"]').disabled = false;
-        }
-
-        // Update destination fields based on the currently selected method
-        const selectedMethod = methodSelect.value;
-        if (selectedMethod === 'trc20') {
-            destinationLabel.textContent = 'TRC20 Address';
-            destinationInput.placeholder = 'Enter your TRC20 wallet address';
-        } else { // cashapp
-            destinationLabel.textContent = 'Cash App $Cashtag';
-            destinationInput.placeholder = 'e.g., $yourtag';
-        }
-    },
     
     // Show dashboard after login
     async showDashboard() {
@@ -337,7 +257,7 @@ const App = {
         const tbody = this.selectors.transactionsTableBody;
         tbody.innerHTML = '';
         
-        const recentTransactions = this.state.transactions.slice(0, 10);
+        const recentTransactions = this.state.transactions.slice(-10).reverse();
         
         recentTransactions.forEach(transaction => {
             const row = document.createElement('tr');
@@ -346,15 +266,14 @@ const App = {
             const statusClass = transaction.status === 'completed' ? 'status-completed' :
                               transaction.status === 'pending' ? 'status-pending' : 'status-failed';
             
-            const isCredit = ['deposit', 'exchange_in', 'game_win'].includes(transaction.type);
-            const amountColor = isCredit ? 'text-green-400' : 'text-red-400';
-            const amountPrefix = isCredit ? '+' : '-';
+            const amountColor = transaction.type === 'deposit' || transaction.type === 'exchange_in' ? 'text-green-400' : 'text-red-400';
+            const amountPrefix = transaction.type === 'deposit' || transaction.type === 'exchange_in' ? '+' : '-';
             
             row.innerHTML = `
                 <td class="p-4 text-muted-foreground">${new Date(transaction.timestamp).toLocaleDateString()}</td>
-                <td class="p-4 capitalize">${transaction.type.replace(/_/g, ' ')}</td>
+                <td class="p-4 capitalize">${transaction.type.replace('_', ' ')}</td>
                 <td class="p-4 text-muted-foreground">${transaction.details || '-'}</td>
-                <td class="p-4 text-right ${amountColor}">${amountPrefix}${transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} ${transaction.currency}</td>
+                <td class="p-4 text-right ${amountColor}">${amountPrefix}${transaction.amount} ${transaction.currency}</td>
                 <td class="p-4 text-center">
                     <span class="status-badge ${statusClass}">${transaction.status}</span>
                 </td>
@@ -490,12 +409,9 @@ const App = {
         this.selectors.viewTitle.textContent = titles[viewId] || 'Dashboard';
         this.state.currentView = viewId;
         
-        // Special handling for some views
+        // Special handling for code explorer
         if (viewId === 'code-explorer-view') {
             this.initializeCodeExplorer();
-        }
-        if (viewId === 'withdraw-view') {
-            this.updateWithdrawDestinationUI();
         }
     },
     

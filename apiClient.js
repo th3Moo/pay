@@ -112,17 +112,8 @@ export const apiClient = {
     },
 
     // Initiate withdrawal
-    async initiateWithdrawal(userId, amount, currency, method, destination) {
+    async initiateWithdrawal(userId, amount, currency) {
         await this._simulateLatency();
-
-        let details = '';
-        if (method === 'trc20') {
-            details = `TRC20 withdrawal of ${amount} ${currency} to ${destination.substring(0, 8)}...`;
-        } else if (method === 'cashapp') {
-            details = `Cash App withdrawal of ${amount} ${currency} to ${destination}`;
-        } else {
-            throw new Error('Invalid withdrawal method');
-        }
         
         return {
             id: `tx_${Date.now()}`,
@@ -131,9 +122,7 @@ export const apiClient = {
             amount: amount,
             status: 'pending',
             timestamp: new Date().toISOString(),
-            details: details,
-            method: method,
-            destination: destination,
+            details: `Bank withdrawal of ${amount} ${currency}`,
             estimatedCompletion: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
         };
     },
